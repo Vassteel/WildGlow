@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace WildGlow
 {
-    [BepInPlugin(Guid, "WildGlow", "0.4.5")]
+    [BepInPlugin(Guid, "WildGlow", "0.4.10")]
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "local.valheim.wildglow";
@@ -108,7 +108,7 @@ namespace WildGlow
             });
             new Terminal.ConsoleCommand("wildglow_status", "Show the loaded version and nearby model emission diagnostics.", args =>
             {
-                string status = "WildGlow 0.4.5; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
+                string status = "WildGlow 0.4.10; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
                 args.Context.AddString(status); Logger.LogInfo(status);
                 foreach (var g in groups.Values.OrderBy(g => g.Distance).Take(5))
                 {
@@ -118,7 +118,7 @@ namespace WildGlow
                     args.Context.AddString(info); Logger.LogInfo(info);
                 }
             });
-            Logger.LogInfo("WildGlow 0.4.5 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
+            Logger.LogInfo("WildGlow 0.4.10 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
         }
 
         private static void Register(Component __instance)
@@ -222,7 +222,7 @@ namespace WildGlow
                 catch (Exception ex) { Logger.LogDebug("Availability: " + ex.Message); }
             }
             // Group before applying budgets so nearby pickups share both a column and a light.
-            var mergeable = near.Where(t => !t.IsDeposit).ToList();
+            var mergeable = near.Where(t => !t.IsDeposit && !t.IsFruitTree).ToList();
             var points = mergeable.Select(t => { var c = t.Center; return new Clusterer.Point {
                 Id = t.Root.GetInstanceID(), X = c.x, Y = c.y, Z = c.z }; }).ToList();
             groups.Clear();
@@ -234,7 +234,7 @@ namespace WildGlow
                 groups.Add(group.Id, group);
             }
             // A deposit owns its entire surface. Nearby bushes must not shift its column into the air.
-            foreach (var deposit in near.Where(t => t.IsDeposit))
+            foreach (var deposit in near.Where(t => t.IsDeposit || t.IsFruitTree))
             {
                 var group = new TargetGroup(new List<Target> { deposit }) { Distance = deposit.Distance };
                 groups.Add(group.Id, group);
@@ -242,7 +242,7 @@ namespace WildGlow
             var selected = groups.Values.OrderBy(g => g.Distance).ThenBy(g => g.Id).Take(maxEffects.Value).ToList();
             foreach (var group in selected) group.PrepareSurface();
             var assigned = CoverageLayout.Allocate(selected.Select(g => g.HasLightBounds && g.Style.LightSpill > 0
-                ? SpillLayout.Requested(g.LightBounds.extents.x, g.LightBounds.extents.z) : 0).ToArray(),
+                ? (g.IsFruitTree ? g.FruitLightPositions.Count : SpillLayout.Requested(g.LightBounds.extents.x, g.LightBounds.extents.z)) : 0).ToArray(),
                 spillIntensity.Value > 0 ? maxSpillLights.Value : 0);
             for (int i = 0; i < selected.Count; i++) selected[i].SpillBudget = assigned[i];
             var chosen = new HashSet<int>(selected.Select(g => g.Id));

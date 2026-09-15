@@ -1,3 +1,28 @@
+# WildGlow 0.4.8 validation
+
+Version 0.4.8 updates the README voice and release metadata.
+
+## Apple-tree attachment fix
+
+The user reported effects at the apple-tree base while the apples remained unlit. The current game log reports WildGlow 0.4.3, which predates real light spill. Separately, the prepared code still fell back to tree colliders because Valharvest's combined apple mesh is not readable at runtime.
+
+The new build uses nine verified fruit-surface points, limits material emission to Pickable.m_hideWhenPicked (the apples mesh), keeps each tree separate from neighboring effects, and places up to four budgeted spill lights among the fruit. Particles stay close to each apple. Hidden fruit invalidates the effect; regrowth restores it. Trunk, leaves and unsupported replacement meshes do not receive fruit attachment points.
+
+Completed checks:
+
+- Release build: zero warnings/errors.
+- Binary API verification: 323 references/hooks, 58 styles and 165 aliases, zero failures.
+- Fruit attachment/lifecycle harness: 31 checks, including rotation/nonuniform scale, harvest, regrowth and changed/missing mesh handling.
+- Material and light harness: 31 checks, including fruit-only material selection, spill placement, shared intensity and cleanup.
+- Existing surface/layout regressions: 30,009 checks passed.
+- Installed Valharvest 3.3.4 asset inspection: both apple_tree variants use the apples harvest mesh, and all nine attachment coordinates match separate fruit components. See assets/compatibility/valharvest-apples.md.
+
+The fix is prepared locally and has not been installed or observed in-game. After installation, confirm `wildglow_status` reports 0.4.8, inspect both tree variants by day/night, harvest and revisit after regrowth, and check nearby ground pickups, frame time and light spill with the user's graphics settings. Transform-based anchors do not simulate shader wind deformation.
+
+## Earlier lighting work
+
+The following records the previous 0.4.5 validation and remaining general lighting playtest; it is retained as historical context.
+
 # WildGlow 0.4.5 validation
 
 This build addresses overbright ore/bush self-emission with no surrounding illumination, dim mushrooms and unwanted greydwarf-nest effects. It applies the lighting path to all eligible styles. Mote motion and artwork are unchanged. See INSTALLATION.md for the last completed installation.

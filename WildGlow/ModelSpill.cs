@@ -31,12 +31,15 @@ namespace WildGlow
             if (count == 0) return;
             var bounds = group.LightBounds; var e = bounds.extents;
             float range = SpillLayout.Range(e.x, e.y, e.z, padding);
+            bool fruit = group.FruitLightPositions.Count > 0;
+            if (fruit) range = Mathf.Max(2, e.magnitude * 2 + padding);
             float intensity = SpillLayout.Intensity(amount, night, count);
             for (int i = 0; i < count; i++)
             {
                 var offset = SpillLayout.Position(e.x, e.y, e.z, i, count);
                 var light = lights[i];
-                light.transform.position = bounds.center + new Vector3(offset.X, offset.Y, offset.Z);
+                light.transform.position = fruit ? group.FruitLightPositions[i % group.FruitLightPositions.Count]
+                    : bounds.center + new Vector3(offset.X, offset.Y, offset.Z);
                 light.range = range; light.intensity = intensity;
                 // Mostly neutral so obsidian does not produce black light or copper stain the ground green.
                 light.color = Color.Lerp(Color.white, tint, .18f); light.enabled = true;

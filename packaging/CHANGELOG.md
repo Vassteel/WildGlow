@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.4.10
+
+- Updated README testing-status wording.
+
+
+## 0.4.9
+
+- Shortened the README and gave the gull a pitch specific to this mod.
+
+
+## 0.4.8
+
+- Rewrote the README in the voice of a Viking gull selling a well-used longship. Installation, controls and testing status remain documented.
+
+
+## 0.4.7
+
+- Attach Valharvest apple-tree particles and surface glow to the nine apples, with light spill originating among the fruit.
+- Keep fruit-tree effects separate from nearby plants and remove them when harvested; restore them on regrowth.
+- Handle the installed non-readable apple mesh without falling back to trunk colliders.
+
+## 0.4.6
+
+- New Viking gull icon artwork.
+- Shorter README with GitHub and Discord links.
+
 ## 0.4.5
 
 Lighting changes.

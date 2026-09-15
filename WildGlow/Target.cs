@@ -29,6 +29,8 @@ namespace WildGlow
         internal int SurfaceRevision;
         internal float SurfaceRadius;
         internal bool IsDeposit => EffectBehavior.Geological(EffectBehavior.Family(Style.Id));
+        internal bool IsFruitTree => FruitSurface.IsTree(Styles.Clean(Root.name));
+        internal GameObject VisualRoot => IsFruitTree ? (pickable ? pickable.m_hideWhenPicked : null) : Root;
         internal IReadOnlyList<SurfaceAnchor> Surface => surface;
 
 
@@ -49,6 +51,7 @@ namespace WildGlow
             Vector3 center = found ? bounds.center : root.transform.position;
             if (found) center.y = category == "Minerals" ? bounds.max.y - Mathf.Min(bounds.size.y * 0.15f, 0.6f) : bounds.min.y + Mathf.Min(bounds.size.y * 0.45f, 0.65f);
             localCenter = root.transform.InverseTransformPoint(center);
+            if (IsFruitTree) PrepareSurface();
         }
 
         internal Vector3 Center => Root.transform.TransformPoint(localCenter);
@@ -56,6 +59,19 @@ namespace WildGlow
         internal void PrepareSurface()
         {
             if (!Root) return;
+            if (IsFruitTree)
+            {
+                // Only the harvestable apples may seed particles, emission and spill.
+                // Never fall back to the trunk collider when this mesh is unavailable.
+                SurfaceRevision++;
+                SurfaceRadius = 0;
+                if (FruitSurface.Prepare(VisualRoot, surface, out var fruitBounds))
+                {
+                    localCenter = Root.transform.InverseTransformPoint(fruitBounds.center);
+                    SurfaceRadius = fruitBounds.extents.magnitude;
+                }
+                return;
+            }
             if (!IsDeposit && ModelSurface.Prepare(Root, surface, ref modelSignature, out var modelBounds, out var changed))
             {
                 if (changed) SurfaceRevision++;

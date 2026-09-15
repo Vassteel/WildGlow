@@ -31,8 +31,8 @@ namespace WildGlow
             Restore(); bindings.Clear();
             foreach (var target in group.Members)
             {
-                if (!target.Root || target.Style.SurfaceGlow <= 0) continue;
-                foreach (var renderer in target.Root.GetComponentsInChildren<Renderer>(true))
+                if (!target.VisualRoot || target.Style.SurfaceGlow <= 0) continue;
+                foreach (var renderer in target.VisualRoot.GetComponentsInChildren<Renderer>(true))
                 {
                     if (!(renderer is MeshRenderer) && !(renderer is SkinnedMeshRenderer)) continue;
                     var source = renderer.sharedMaterials; var replacement = (Material[])source.Clone(); bool supported = false;

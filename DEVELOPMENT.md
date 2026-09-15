@@ -1,5 +1,7 @@
 # WildGlow development workspace
 
+Version 0.4.7 attaches Valharvest apple-tree effects to the harvestable fruit, including compatibility points for its non-readable mesh. `tools/FruitTests` checks attachment and harvest/regrowth behavior; `scripts/verify_valharvest_apples.py` checks the points against the locally extracted bundle. See `assets/compatibility/valharvest-apples.md`.
+
 Version 0.4.5 adds real surrounding illumination sized to each eligible model, dims ore/bush self-emission, brightens mushrooms and excludes greydwarf nests and structures (including Fuling huts and bone rib gates). Motes are unchanged. Each style has independent SurfaceGlow and LightSpill controls. See VALIDATION.md for verification and INSTALLATION.md for the last completed installation.
 
 See [package README](packaging/README.md) for behavior, configuration and local import instructions. See [validation](VALIDATION.md) for checks and remaining playtest work.

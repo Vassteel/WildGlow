@@ -8,7 +8,7 @@ public enum HideFlags { DontSave }
 public struct Color { public float r,g,b,a; public Color(float x,float y,float z,float w=1){r=x;g=y;b=z;a=w;} public static Color Lerp(Color a,Color b,float t)=>a*(1-t)+b*t; public static Color white=>new Color(1,1,1); public static Color operator +(Color x,Color y)=>new Color(x.r+y.r,x.g+y.g,x.b+y.b,x.a+y.a); public static Color operator *(Color x,float f)=>new Color(x.r*f,x.g*f,x.b*f,x.a*f); }
 public struct Vector2 { public float x,y; public Vector2(float a,float b){x=a;y=b;} }
 public class Texture:Object {} public class Texture2D:Texture { public static Texture2D whiteTexture=new Texture2D(); }
-public static class Mathf { public static float Clamp(float a,float b,float c)=>Math.Clamp(a,b,c); public static float Lerp(float a,float b,float t)=>a+(b-a)*t; }
+public static class Mathf { public static float Max(float a,float b)=>Math.Max(a,b); public static float Clamp(float a,float b,float c)=>Math.Clamp(a,b,c); public static float Lerp(float a,float b,float t)=>a+(b-a)*t; }
 public class Material:Object {
  public Dictionary<string,object> properties=new(); public Dictionary<string,Vector2> scales=new(),offsets=new(); public HashSet<string> keywords=new();
  public Material(){} public Material(Material m){properties=new(m.properties);scales=new(m.scales);offsets=new(m.offsets);keywords=new(m.keywords);}
@@ -19,11 +19,11 @@ public class Material:Object {
 }
 public class Renderer:Object { private Material[] materials; public Material[] sharedMaterials { get=>(Material[])materials.Clone(); set=>materials=(Material[])value.Clone(); } }
 public class MeshRenderer:Renderer {} public class SkinnedMeshRenderer:Renderer {} public class ParticleSystemRenderer:Renderer {}
-public struct Vector3 { public float x,y,z; public Vector3(float x,float y,float z){this.x=x;this.y=y;this.z=z;} public static Vector3 operator +(Vector3 a,Vector3 b)=>new(a.x+b.x,a.y+b.y,a.z+b.z); }
+public struct Vector3 { public float x,y,z; public float magnitude=>(float)Math.Sqrt(x*x+y*y+z*z); public Vector3(float x,float y,float z){this.x=x;this.y=y;this.z=z;} public static Vector3 operator +(Vector3 a,Vector3 b)=>new(a.x+b.x,a.y+b.y,a.z+b.z); }
 public struct Bounds {public Vector3 center,extents;}
 public class Transform:Object { public Vector3 position; public void SetParent(Transform p,bool keepWorld){} }
 public enum LightType {Point} public enum LightShadows {None} public enum LightRenderMode {ForcePixel}
 public class Light:Object {public static List<Light> All=new(); public GameObject gameObject; public Transform transform=>gameObject.transform; public bool enabled; public LightType type;public LightShadows shadows;public LightRenderMode renderMode; public float bounceIntensity,range,intensity; public Color color;}
 public class GameObject:Object { public Transform transform=new(); public GameObject(string n=""){name=n;} public T AddComponent<T>() where T:Light,new(){var l=new T{gameObject=this};Light.All.Add(l);return l;} public List<Renderer> renderers=new(); public T[] GetComponentsInChildren<T>(bool includeInactive)=>renderers.OfType<T>().ToArray(); }
 }
-namespace WildGlow { internal class Style {internal float SurfaceGlow=.085f;} internal class Target {internal UnityEngine.GameObject Root; internal Style Style=new();} internal class TargetGroup {internal List<Target> Members=new();internal bool HasLightBounds;internal int SpillBudget;internal UnityEngine.Bounds LightBounds;} }
+namespace WildGlow { internal class Style {internal float SurfaceGlow=.085f;} internal class Target {internal UnityEngine.GameObject Root; internal UnityEngine.GameObject Fruit; internal UnityEngine.GameObject VisualRoot=>Fruit??Root; internal Style Style=new();} internal class TargetGroup {internal List<Target> Members=new();internal List<UnityEngine.Vector3> FruitLightPositions=new();internal bool HasLightBounds;internal int SpillBudget;internal UnityEngine.Bounds LightBounds;} }

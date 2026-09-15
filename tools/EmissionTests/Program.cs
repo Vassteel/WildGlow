@@ -45,4 +45,22 @@ spill.Tick(group,Color.white,0,3,1);Check(spill.ActiveCount==0 && Light.All.True
 group.SpillBudget=4;spill.Tick(group,Color.white,.6f,3,1);spill.Dispose();
 Check(Light.All.TrueForAll(l=>!l.enabled && l.gameObject.destroyed),"Disposal leaves lighting behind");
 spill=new ModelSpill(new Transform());group.HasLightBounds=false;spill.Tick(group,Color.white,1,3,1);Check(spill.ActiveCount==0,"Missing model has a floating light");spill.Dispose();
+// Fruit decoration must leave trunk materials alone and put real lights at fruit height.
+var bark=new MeshRenderer{sharedMaterials=new[]{original}};
+var apple=new MeshRenderer{sharedMaterials=new[]{original}};
+var tree=new GameObject();tree.renderers.Add(bark);tree.renderers.Add(apple);
+var fruit=new GameObject();fruit.renderers.Add(apple);
+var fruitGroup=new TargetGroup();fruitGroup.Members.Add(new Target{Root=tree,Fruit=fruit});
+fx=new ModelEmission();fx.Refresh(fruitGroup);fx.Tick(1,1);
+Check(bark.sharedMaterials[0]==original && apple.sharedMaterials[0]!=original,"Fruit emission changed the trunk or missed the apples");
+fx.Dispose();Check(apple.sharedMaterials[0]==original,"Fruit emission did not restore after harvest/removal");
+fruitGroup.HasLightBounds=true;fruitGroup.SpillBudget=2;
+fruitGroup.LightBounds=new Bounds{center=new Vector3(10,5,10),extents=new Vector3(1,2,1)};
+fruitGroup.FruitLightPositions.Add(new Vector3(9,4,10));fruitGroup.FruitLightPositions.Add(new Vector3(11,6,10));
+spill=new ModelSpill(new Transform());spill.Tick(fruitGroup,Color.white,.6f,3,1);
+var fruitLights=Light.All.FindAll(l=>!l.gameObject.destroyed);
+Check(fruitLights.Count==2 && fruitLights[0].transform.position.y==4 && fruitLights[1].transform.position.y==6,"Spill moved off the fruit to the tree base/canopy ceiling");
+Check(Math.Abs(fruitLights[0].intensity+fruitLights[1].intensity-.6f)<.00001f,"Fruit lights multiply the intensity budget");
+Check(fruitLights.TrueForAll(l=>l.renderMode==LightRenderMode.ForcePixel && l.shadows==LightShadows.None),"Fruit spill lost its pixel lighting or added shadow cost");
+spill.Hide();Check(fruitLights.TrueForAll(l=>!l.enabled),"Hidden fruit retains illumination");spill.Dispose();
 Console.WriteLine($"PASS: {checks} emission lifecycle/ownership checks using material/renderer test doubles (no GPU validation).");

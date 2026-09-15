@@ -85,7 +85,8 @@ namespace WildGlow
         internal int SpillLights => spill.ActiveCount;
         private SurfaceAnchor SourceAnchor(int index, bool upward)
         {
-            int first = (int)(MoteMotion.Hash(index + 31) * sources.Anchors.Count);
+            int first = sources.IsFruitTree ? index % sources.Anchors.Count
+                : (int)(MoteMotion.Hash(index + 31) * sources.Anchors.Count);
             // Columns emerge from the upper rock; side/underside anchors feed the surface layer.
             if (upward && sources.IsDeposit)
                 for (int i = 0; i < sources.Anchors.Count; i++)
@@ -113,11 +114,15 @@ namespace WildGlow
         internal void Tick(Vector3 center, float time, Appearance a, float fade, Camera camera)
         {
             if (!root) return;
+            if (sources != null && sources.IsFruitTree && !sources.Anchors.Exists(anchor => anchor.Valid))
+            { SetVisible(false); return; }
             root.transform.position = center;
             if (sources != null && sources.Anchors.Count == 0) { SetVisible(false); return; }
             float opacity = a.Brightness * fade * Mathf.Clamp01((time - created) / 0.8f);
             int count = Mathf.Clamp(Mathf.RoundToInt(64 * a.Density), 12, 128), glintCount = 0;
             float radius = style.Radius * a.Radius, height = style.Height * a.Height;
+            bool fruit = sources != null && sources.IsFruitTree;
+            if (fruit) { radius = Mathf.Min(radius, .10f); height = Mathf.Min(height, .22f); }
             // Model anchors already supply the object's shape; keep local flourishes close to it.
             float localRadius = sources != null && !sources.IsDeposit ? Mathf.Min(radius, .16f) : radius;
             Vector3 cameraLocal = camera ? camera.transform.position - center : new Vector3(0, 2, -5);
@@ -129,7 +134,7 @@ namespace WildGlow
             {
                 int key = i + seed;
                 float phase = MoteMotion.Phase(time, a.Speed, key);
-                bool column = i % 3 == 0;
+                bool column = !fruit && i % 3 == 0;
                 var anchor = Anchor(i, center, column);
                 Vector3 position = TrailMesh.ToVector(EffectBehavior.Path(family, column, anchor, phase, time, key, column ? radius : localRadius, height, a.Twist, night));
                 var normal = column ? Vector3.zero : AnchorNormal(i);
@@ -153,9 +158,10 @@ namespace WildGlow
             {
                 int key = seed + 1000 + i;
                 float phase = MoteMotion.Phase(time, a.Speed * 0.65f, key);
-                var anchor = Anchor(i + 19, center, i % 4 == 0);
-                Vector3 position = TrailMesh.ToVector(EffectBehavior.Path(family, i % 4 == 0, anchor, phase, time, key, (i % 4 == 0 ? radius : localRadius) * 1.1f, height * .95f, a.Twist * .7f, night));
-                position = TrailMesh.Orient(position, anchor, i % 4 == 0 ? Vector3.zero : AnchorNormal(i + 19));
+                bool column = !fruit && i % 4 == 0;
+                var anchor = Anchor(i + 19, center, column);
+                Vector3 position = TrailMesh.ToVector(EffectBehavior.Path(family, column, anchor, phase, time, key, (column ? radius : localRadius) * 1.1f, height * .95f, a.Twist * .7f, night));
+                position = TrailMesh.Orient(position, anchor, column ? Vector3.zero : AnchorNormal(i + 19));
                 position += new Vector3(Mathf.Sin(time * 0.45f + key), Mathf.Sin(time * 0.6f + key), Mathf.Cos(time * 0.4f + key)) * 0.025f;
                 var tint = highlight;
                 tint.a = opacity * Mathf.Lerp(.3f, .5f, night) * Mathf.Sin(phase * Mathf.PI) * (0.6f + 0.4f * MoteMotion.Hash(key + 31));

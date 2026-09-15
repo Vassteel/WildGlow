@@ -12,6 +12,8 @@ namespace WildGlow
         internal float Distance;
         internal readonly List<SurfaceAnchor> Anchors = new List<SurfaceAnchor>();
         internal bool IsDeposit;
+        internal bool IsFruitTree;
+        internal readonly List<Vector3> FruitLightPositions = new List<Vector3>();
         internal int SurfaceRevision;
         internal float SurfaceRadius;
         internal Bounds LightBounds;
@@ -19,10 +21,11 @@ namespace WildGlow
         internal int SpillBudget;
         internal void PrepareSurface()
         {
-            Anchors.Clear(); SurfaceRevision = 17; SurfaceRadius = 0; IsDeposit = false;
+            Anchors.Clear(); FruitLightPositions.Clear(); SurfaceRevision = 17; SurfaceRadius = 0; IsDeposit = false; IsFruitTree = false;
             foreach (var member in Members)
             {
                 member.PrepareSurface(); IsDeposit |= member.IsDeposit;
+                IsFruitTree |= member.IsFruitTree;
                 SurfaceRadius = Mathf.Max(SurfaceRadius, member.SurfaceRadius);
                 unchecked { SurfaceRevision = SurfaceRevision * 31 + member.Root.GetInstanceID(); SurfaceRevision = SurfaceRevision * 31 + member.SurfaceRevision; }
                 int budget = Mathf.Max(1, 100 / Members.Count);
@@ -32,6 +35,12 @@ namespace WildGlow
             if (TryCenter(out var center))
                 foreach (var a in Anchors) if (a.Valid) SurfaceRadius = Mathf.Max(SurfaceRadius, Vector3.Distance(center, a.World));
             RefreshLightBounds();
+            if (IsFruitTree)
+            {
+                var points = Anchors.Where(a => a.Valid).Select(a => new MoteMotion.Point(a.World.x, a.World.y, a.World.z)).ToList();
+                foreach (int index in CoverageLayout.Select(points, 4, .1f))
+                    FruitLightPositions.Add(new Vector3(points[index].X, points[index].Y, points[index].Z));
+            }
         }
 
         internal void RefreshLightBounds()
