@@ -1,0 +1,25 @@
+**/bin/
+**/obj/
+.tools/
+*.user
+
+# Separate mod repository
+/Quartermaster/
+/NoTaintTooltip/
+
+# Local builds, backups and machine-specific state
+**/__pycache__/
+*.pyc
+/.build/
+/backups/
+/dist/
+/.agents/
+/.codex/
+Environment.props
+.env
+.env.*
+
+# Old experiments and non-mod reference assets
+/archive/
+/assets/discord/
+/assets/game-items/*.png

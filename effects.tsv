@@ -1,0 +1,59 @@
+id	label	color	accent	shape	radius	height	aliases
+carrot	Wild carrot / carrot seeds	FF862D	FFE0A1	seed	0.38	2.1	Carrot,CarrotSeeds,Pickable_SeedCarrot
+turnip	Wild turnip / turnip seeds	C595EF	F5DC91	seed	0.4	2.1	Turnip,TurnipSeeds,Pickable_SeedTurnip
+onion	Onion / onion seeds	E5D5AA	F9F0D9	seed	0.38	2.1	Onion,OnionSeeds,Pickable_SeedOnion
+dandelion	Dandelion	FFD950	FFF0A8	star	0.4	2.1	Dandelion
+thistle	Thistle	56C9FF	D0F6FF	star	0.42	2.3	Thistle
+raspberry	Raspberry bush	EF4566	FFC0C8	round	0.5	2.3	Raspberry,RaspberryBush
+blueberry	Blueberry bush	698BFF	C1D3FF	round	0.45	2.2	Blueberries,BlueberryBush
+cloudberry	Cloudberry bush	FFBA49	FFE7A7	round	0.4	2.1	Cloudberry,CloudberryBush
+lingonberry	Lingonberry bush	D95458	FFB5AB	round	0.42	2.1	Lingonberry,LingonberryBush
+vineberry	Ashvine berries	D07DA4	F4BEDA	round	0.45	2.3	Vineberry,VineberrySeeds,VineAsh
+mushroom	Red mushroom	ED684E	FFD4A8	round	0.32	1.8	Mushroom
+mushroomyellow	Yellow mushroom	FFE05A	FFF7B2	round	0.32	1.8	MushroomYellow,Pickable_Mushroom_yellow
+mushroomblue	Blue mushroom	50ADEB	B3F0FF	round	0.32	1.8	MushroomBlue,Pickable_Mushroom_blue
+jotunpuffs	Jotun puffs	EDBF65	FFF2B4	round	0.42	2.1	MushroomJotunPuffs,Pickable_Mushroom_JotunPuffs
+magecap	Magecap	AF86FF	E6C5FF	star	0.42	2.3	MushroomMagecap,Pickable_Mushroom_Magecap
+barley	Wild barley	DDBB68	FFF1B5	seed	0.45	2.3	Barley,Pickable_Barley_Wild
+flax	Wild flax	82A9FF	CDD9FF	leaf	0.45	2.3	Flax,Pickable_Flax_Wild
+fiddlehead	Fiddlehead	8CCA61	DBFBAF	leaf	0.4	2.1	Fiddlehead
+smokepuff	Smoke puff	B2B7A2	E8E9D7	round	0.38	2.0	SmokePuff
+kale	Kale / kale seeds	83B86A	DBEFB5	leaf	0.42	2.1	Kale,KaleSeeds,Pickable_SeedKale
+oat	Oat seeds	D4B987	F6E5C3	seed	0.42	2.1	Oat,OatSeeds,Pickable_Oat
+poteitr	Poteitr	B1A9EA	E6D7FF	round	0.38	2.0	Poteitr
+honey	Wild beehive / honey	FFBA32	FFE8A4	hex	0.5	2.5	Beehive,Honey,QueenBee
+copper	Copper deposit	D5915B	7CE1C9	shard	0.85	3.2	CopperOre,Copper,CopperScrap,MineRock_Copper,rock4_copper,rock4_copper_frac
+tin	Tin deposit	A6C5CC	E6FAFF	shard	0.65	2.8	TinOre,Tin,MineRock_Tin,Pickable_Tin
+iron	Iron / muddy scrap pile	B39C83	E6CDC1	shard	0.8	3.0	IronOre,IronScrap,Iron,MineRock_Iron,mudpile,mudpile_frac,mudpile2,mudpile2_frac,mudpile_old,BogIronOre
+silver	Silver vein	CAE6FF	F2FCFF	shard	0.75	3.2	SilverOre,Silver,silvervein,silvervein_frac,rock3_silver,rock3_silver_frac
+obsidian	Obsidian	11101B	B4A4E7	shard	0.48	2.5	Obsidian,MineRock_Obsidian,Pickable_MountainCaveObsidian
+blackmetal	Black metal scrap	20382D	82D99C	shard	0.45	2.3	BlackMetalScrap,BlackMetal
+flametal	Flametal deposit	FF713A	FFD580	shard	0.9	3.5	FlametalOreNew,FlametalOre,FlametalNew,Flametal,MineRock_Meteorite,LeviathanLava,FlametalRockstand,FlametalRockstand_frac
+meteorite	Meteorite	AD71E2	E7BBFF	shard	0.55	2.5	Meteorite,Pickable_Meteorite
+gold	Gold / petrified Gammeltroll	E4BC54	FFF2B7	shard	0.85	3.2	GoldOre,Gold,goldvein,goldvein_frac,TrollFrost_Frac,TrollFrost_Frac_arm,TrollFrost_Frac_legs
+crystal	Crystal	ACF1ED	F1FFFF	shard	0.38	2.2	Crystal,Pickable_MountainCaveCrystal
+chitin	Abyssal barnacles / chitin	D5C9B2	FFF0D7	hex	0.5	2.4	Chitin,Leviathan
+softtissue	Soft tissue	D997B6	FFD5E8	round	0.65	2.6	SoftTissue,giant_brain,giant_brain_frac
+blackmarble	Petrified bone / black marble	39484C	A6D1D7	shard	0.75	2.7	BlackMarble,giant_skull,giant_skull_frac,giant_ribs,giant_ribs_frac
+grausten	Grausten	988F89	DFBBA3	shard	0.45	2.2	Grausten,Pickable_Ashstone
+sulfur	Sulfur rock	DEE274	F9FFC0	shard	0.4	2.2	Sulfur,SulfurStone,Pickable_SulfurRock
+tar	Tar	17181B	B2A2C4	round	0.45	2.2	Tar,Pickable_TarBig,tarlump1_frac
+chest	Wild chest / treasure	EAC263	FFF0BA	star	0.55	2.7	Coins,AncientCoin
+amber	Amber / amber pearl	EE9D35	FFE1A2	shard	0.3	1.9	Amber,AmberPearl
+ruby	Ruby	E34463	FFB7CA	shard	0.3	2.0	Ruby
+blackcore	Black core	652B92	DB93FF	hex	0.4	2.4	BlackCore,Pickable_BlackCoreStand
+moltencore	Molten core	FF943C	FFF1A5	hex	0.4	2.4	MoltenCore,Pickable_MoltenCoreStand
+frostcore	Frostcore	88DFF5	E1FDFF	hex	0.4	2.4	FrostCore,Pickable_FrostCoreHanger
+royaljelly	Royal jelly	D294EB	F5CCFF	round	0.4	2.2	RoyalJelly
+dragonegg	Dragon egg	B786DD	F5BDFF	hex	0.5	2.6	DragonEgg
+voltureegg	Volture egg	DAB796	FCE9C8	round	0.4	2.1	VoltureEgg,ChickenEgg
+fenris	Fenris hair / claws	A9BBD9	E7F3FF	leaf	0.4	2.3	WolfHair,WolfClaw,FenringHair,FenringClaw,Pickable_Hairstrands01,Pickable_Hairstrands02
+bones	Skeletal remains	DCD6C2	FFF4DE	shard	0.4	2.1	BoneFragments,Pickable_ForestCryptRemains01,Pickable_ForestCryptRemains02,Pickable_ForestCryptRemains03,Pickable_ForestCryptRemains04,Pickable_MountainRemains01_buried
+charredskull	Charred skull	625B53	EAAA67	shard	0.4	2.3	Charredskull,CharredSkull
+glowworm	Luminous larva	AFEC81	EBFFB6	seed	0.38	2.2	GlowWorm,Pickable_GlowWorm
+dyrnwyn	Dyrnwyn fragments	FFB06F	FFF0D2	shard	0.4	2.5	SwordDyrnwynFragment1,SwordDyrnwynFragment2,SwordDyrnwynFragment3,Pickable_Swordpiece1,Pickable_Swordpiece2,Pickable_Swordpiece3
+resin	Resin	ECAF48	FFE8B3	round	0.3	1.8	Resin
+seed	Tree seeds / ancient seed	B39C5C	DAEAAF	seed	0.3	1.9	Acorn,BeechSeeds,BirchSeeds,FirCone,PineCone,AncientSeed
+meat	Meat pile	C77075	EFAFA0	leaf	0.4	2.0	RawMeat,DeerMeat,WolfMeat,HareMeat,Pickable_MeatPile
+pottery	Pot shard	C88966	F1CAAB	shard	0.3	1.8	Pot_Shard,Pickable_Pot_Shard
+fallback	Other collectible (item color in game)	8ECCB5	E4FCEB	star	0.4	2.2	

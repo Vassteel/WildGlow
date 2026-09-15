@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../WildGlow/LightingProfile.cs" Link="LightingProfile.cs" />
+    <Compile Include="../../WildGlow/MoteMotion.cs" Link="MoteMotion.cs" />
+    <Compile Include="../../WildGlow/EffectBehavior.cs" Link="EffectBehavior.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+{
+  "name": "WildGlow",
+  "author": "Local",
+  "version_number": "0.4.5",
+  "website_url": "https://discord.gg/abN7R2tWyK",
+  "description": "Model-attached collectible motes and soft light spill with day/night variants. Sparse columns, brighter mushrooms and subdued ore/bush glow. Per-effect controls. Common items, trees, structures, dropped items and greydwarf nests excluded.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2350"
+  ]
+}

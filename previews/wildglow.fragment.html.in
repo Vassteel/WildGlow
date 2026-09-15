@@ -1,0 +1,244 @@
+<div id="wildglow-preview">
+  <style>
+    #wildglow-preview { color:var(--foreground, #e4eddf); font:14px/1.5 system-ui,sans-serif; }
+    #wildglow-preview * { box-sizing:border-box; }
+    #wildglow-preview .wg-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px 20px; }
+    #wildglow-preview .form-label { display:flex; flex-direction:column; gap:5px; }
+    #wildglow-preview .form-select, #wildglow-preview .btn { font:inherit; padding:8px 12px; border:1px solid var(--border,#4b6052); border-radius:6px; color:inherit; background:var(--card,#1c2921); }
+    #wildglow-preview .btn { cursor:pointer; }
+    #wildglow-preview .form-range { display:block; width:100%; accent-color:#95bc87; }
+    #wildglow-preview .form-control-color { width:100%; height:36px; }
+    #wildglow-preview .text-small { font-size:12px; }
+    #wildglow-preview .viz-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    #wildglow-preview [hidden] { display:none; }
+    #wildglow-preview .wg-top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+    #wildglow-preview .wg-stage { position:relative; overflow:hidden; }
+    #wildglow-preview .wg-pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    #wildglow-preview .wg-variant { position:absolute; top:14px; left:16px; color:#e4eddf; }
+    @media(max-width:640px) { #wildglow-preview .wg-pair { grid-template-columns:1fr; } }
+    #wildglow-preview canvas.wg-main { display:block; width:100%; height:400px; }
+    #wildglow-preview .wg-caption { position:absolute; bottom:16px; left:20px; right:16px; color:#e4eddf; pointer-events:none; text-shadow:0 1px 4px #000; }
+    #wildglow-preview .wg-mote { position:absolute; top:16px; right:18px; color:#e4eddf; pointer-events:none; text-align:right; }
+    #wildglow-preview .wg-mote canvas { display:block; width:120px; height:120px; margin-left:auto; }
+    #wildglow-preview .wg-controls { margin:16px 0; }
+    #wildglow-preview .wg-gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px 12px; margin-top:16px; }
+    #wildglow-preview .wg-mini canvas { display:block; width:100%; height:150px; margin-bottom:6px; }
+    #wildglow-preview .wg-mini button { width:100%; }
+    #wildglow-preview .wg-meta { margin:8px 0 12px; }
+    #wildglow-preview summary { cursor:pointer; padding:10px 0; }
+    #wildglow-preview .wg-swatch { display:inline-block; width:10px; height:10px; margin-right:5px; border-radius:50%; }
+    @media(max-width:480px) { #wildglow-preview .wg-gallery { grid-template-columns:repeat(2,minmax(0,1fr)); } #wildglow-preview canvas.wg-main { height:350px; } #wildglow-preview .wg-mote canvas { width:96px; height:96px; } }
+  </style>
+  <div class="wg-top">
+    <label class="form-label">Effect <select class="form-select" data-effect aria-label="Collectible effect"></select></label>
+    <label><input type="checkbox" data-enabled checked> Enable this effect</label>
+    <button class="btn" type="button" data-play aria-pressed="true">Pause motion</button>
+  </div>
+  <div class="wg-pair">
+  <div class="wg-stage">
+    <span class="wg-variant" data-variant>Night</span>
+    <canvas class="wg-main" role="img" aria-label="Animated collectible motes rising from a small halo and gathering into a narrow column"></canvas>
+    <div class="wg-mote text-small"><canvas data-mote aria-label="Four enlarged faceted mote variants generated from the mod's artwork"></canvas>4 variants · enlarged</div>
+    <div class="wg-caption"><span data-name></span><br><span class="text-small">Motion study · illustrative object · model lighting needs in-game testing</span></div>
+  </div>
+  <div class="wg-stage">
+    <span class="wg-variant" data-other-variant>Day</span>
+    <canvas class="wg-main" data-comparison role="img" aria-label="Same collectible effect in the opposite day or night variant"></canvas>
+    <div class="wg-caption"><span data-other-name></span><br><span class="text-small">Motion study · illustrative object · model lighting needs in-game testing</span></div>
+  </div>
+  </div>
+  <div class="wg-meta text-small" data-meta aria-live="polite"></div>
+  <div class="viz-controls wg-controls">
+    <label class="form-label">Mote color <input class="form-control form-control-color" data-color type="color" value="#ff862d"></label>
+    <label class="form-label">Mote rim <input class="form-control form-control-color" data-accent type="color" value="#ffe0a1"></label>
+    <label class="form-label">Mote shape <select class="form-select" data-shape><option value="seed">Seed</option><option value="leaf">Leaf</option><option value="round">Round</option><option value="star">Sparkle</option><option value="shard">Angular shard</option><option value="hex">Honeycomb</option></select></label>
+    <label class="form-label">First panel / gallery <select class="form-select" data-scene><option value="night">Night variant</option><option value="day">Day variant</option></select></label>
+    <label class="form-label">Pickups <select class="form-select" data-group><option value="single">Single collectible</option><option value="group">Nearby group · one effect</option></select></label>
+    <label class="form-label">Density <output data-density-out>0.60×</output><input class="form-range" data-density type="range" min="0.25" max="2" step="0.05" value="0.6"></label>
+    <label class="form-label">Height <output data-height-out>2.00×</output><input class="form-range" data-height type="range" min="0.3" max="4" step="0.05" value="2"></label>
+    <label class="form-label">Mote spread <output data-radius-out>1.00×</output><input class="form-range" data-radius type="range" min="0.3" max="2" step="0.05" value="1"></label>
+    <label class="form-label">Rise speed <output data-speed-out>0.90×</output><input class="form-range" data-speed type="range" min="0.25" max="2" step="0.05" value="0.9"></label>
+    <label class="form-label">Fine dust <output data-dust-out>1.00×</output><input class="form-range" data-dust type="range" min="0" max="2" step="0.05" value="1"></label>
+    <label class="form-label">Short trails <output data-trailLength-out>2.00×</output><input class="form-range" data-trailLength type="range" min="0" max="2" step="0.05" value="2"></label>
+    <label class="form-label">Slow twist / spin <output data-twist-out>1.45×</output><input class="form-range" data-twist type="range" min="0" max="2" step="0.05" value="1.45"></label>
+    <label class="form-label">Model glow <output data-areaGlow-out>1.20×</output><input class="form-range" data-areaGlow type="range" min="0" max="2" step="0.05" value="1.2"></label>
+  </div>
+  <div class="viz-row"><button class="btn" type="button" data-export>Save tuned config</button><button class="btn" type="button" data-revise hidden>Request this look</button><span class="text-small" data-saved aria-live="polite"></span></div>
+  <details data-gallery><summary>Every proposed effect · <span data-count></span> motion previews</summary><div class="wg-gallery"></div></details>
+  <script>
+  (() => {
+    const root = document.getElementById('wildglow-preview');
+    const catalog = /*__STYLES__*/ [];
+    const atlases = /*__ATLASES__*/ {};
+    const $ = s => root.querySelector(s);
+    const main = $('.wg-main'), comparison = $('[data-comparison]');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const state = { selected:0, playing:!reduced.matches, t:2.9, density:.6, height:2, radius:1, speed:0.9, dust:1, trailLength:2, twist:1.45, areaGlow:1.2, scene:'night', group:false };
+    const controls=['density','height','radius','speed','dust','trailLength','twist','areaGlow'];
+    const tuning = catalog.map(s=>({...s,enabled:true}));
+    const fract = n=>n-Math.floor(n);
+    const hash = n=>{let x=n>>>0;x=Math.imul(x^(x>>>16),0x7feb352d);x=Math.imul(x^(x>>>15),0x846ca68b);x^=x>>>16;return (x&0xffffff)/16777216};
+    const clamp = n=>Math.max(0,Math.min(1,n));
+    const smooth = n=>{n=clamp(n);return n*n*(3-2*n)};
+    const hex = h=>[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+    const rgba = (h,a)=>`rgba(${hex(h).join(',')},${a})`;
+    const texCache = new Map(), maskPixels=new Map();
+    function motif(id) {
+      if(id.includes('berry'))return 'berry';
+      if(id.startsWith('mushroom')||['jotunpuffs','magecap','smokepuff'].includes(id))return 'spore';
+      if(id.endsWith('core'))return 'core';
+      if(['honey','chitin','dragonegg'].includes(id))return 'cell';
+      if(id==='fenris')return 'fiber';return 'facet';
+    }
+    function texture(s,variant=0) {
+      const family=motif(s.id),key=s.color+s.accent+s.shape+family+variant;
+      if(texCache.has(key))return texCache.get(key);
+      const c=document.createElement('canvas'); c.width=c.height=96;
+      const mask=maskPixels.get(family+'-'+s.shape);if(!mask)return c;
+      const g=c.getContext('2d'),pixels=g.createImageData(96,96),base=hex(s.color),rim=hex(s.accent);
+      for(let y=0;y<96;y++)for(let x=0;x<96;x++) {
+        const src=((y+Math.floor(variant/2)*96)*192+x+(variant%2)*96)*4,dst=(y*96+x)*4;
+        for(let j=0;j<3;j++)pixels.data[dst+j]=base[j]*mask[src]/255+rim[j]*mask[src+1]/255;
+        pixels.data[dst+3]=mask[src+3];
+      }
+      g.putImageData(pixels,0,0);texCache.set(key,c);return c;
+    }
+    function position(p,t,key,r,h,twist=state.twist) {
+      const g=smooth(p/.65),rad=r*(.12+.88*(1-g))*(.3+.7*Math.sqrt(hash(key+191))),angle=hash(key+43)*Math.PI*2+(p*4.2+t*.16)*twist;
+      return {x:Math.cos(angle)*rad,y:.05+p*h,z:Math.sin(angle)*rad};
+    }
+    /*__BEHAVIOR__*/
+    function size(c) {
+      const r=c.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1,2);
+      if(c.width!==Math.round(r.width*dpr)||c.height!==Math.round(r.height*dpr)){c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr)}
+      const g=c.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return [g,r.width,r.height];
+    }
+    function polygon(g,points,fill) {g.beginPath();points.forEach((p,i)=>i?g.lineTo(...p):g.moveTo(...p));g.closePath();g.fillStyle=fill;g.fill()}
+    function item(g,s,cx,cy,scale) {
+      g.save();g.translate(cx,cy);g.scale(scale,scale);
+      const plants=['carrot','turnip','onion','dandelion','thistle','barley','flax','fiddlehead','kale','oat','poteitr','seed'];
+      const berries=['raspberry','blueberry','cloudberry','lingonberry','vineberry'];
+      const mushrooms=['mushroom','mushroomyellow','mushroomblue','jotunpuffs','magecap','smokepuff'];
+      if(plants.includes(s.id)||berries.includes(s.id)) {
+        g.strokeStyle='#6d8854';g.lineWidth=2;
+        for(let i=0;i<7;i++) {
+          const x=(i-3)*7,y=-17-hash(i+21)*24;
+          g.beginPath();g.moveTo(0,3);g.quadraticCurveTo(x*.5,-10,x,y);g.stroke();
+          polygon(g,[[x,y+9],[x-7,y-1],[x-1,y-8],[x+4,y+1]],i%2?'#54784a':'#7d9b61');
+          if(berries.includes(s.id)||['dandelion','thistle','flax','carrot'].includes(s.id)) {
+            g.fillStyle=s.id==='carrot'?'#d9d9b6':'#'+s.color;g.beginPath();g.arc(x,y-5,berries.includes(s.id)?3.5:2.4,0,Math.PI*2);g.fill();
+          }
+        }
+      } else if(mushrooms.includes(s.id)) {
+        for(let i=0;i<3;i++){const x=(i-1)*15,y=i===1?-7:0;polygon(g,[[x-2,y],[x-2,y-16],[x+3,y-16],[x+4,y]],'#aa9d84');g.fillStyle='#'+s.color;g.beginPath();g.ellipse(x,y-17,13,7,0,Math.PI,Math.PI*2);g.fill()}
+      } else if(s.id==='honey') {
+        for(let i=0;i<6;i++){g.fillStyle=i%2?'#9b703a':'#bd8b49';g.beginPath();g.ellipse(0,-i*6,22-i*2,7,0,0,Math.PI*2);g.fill()}g.fillStyle='#2c231a';g.beginPath();g.ellipse(4,-9,4,6,0,0,Math.PI*2);g.fill();
+      } else if(s.id==='chest') {
+        polygon(g,[[-28,0],[-28,-27],[16,-31],[30,-20],[30,3],[-12,11]],'#6b4c30');polygon(g,[[-28,-27],[-15,-37],[26,-33],[30,-20],[16,-31]],'#926b40');polygon(g,[[16,-31],[30,-20],[30,3],[16,7]],'#453826');
+        g.strokeStyle='#b99a61';g.lineWidth=3;g.beginPath();g.moveTo(-15,-35);g.lineTo(-15,9);g.moveTo(12,-34);g.lineTo(12,8);g.stroke();g.fillStyle='#edc46b';g.fillRect(-4,-16,7,8);
+      } else if(['dragonegg','voltureegg'].includes(s.id)) {
+        g.fillStyle='#'+s.color;g.beginPath();g.ellipse(0,-14,15,22,-.12,0,Math.PI*2);g.fill();polygon(g,[[-10,-21],[0,-32],[8,-18],[2,-5]],rgba(s.accent,.45));
+      } else {
+        polygon(g,[[-29,2],[-21,-22],[-6,-32],[16,-24],[29,-5],[17,9],[-6,11]],'#394248');polygon(g,[[-21,-22],[-6,-32],[3,-14],[-7,4],[-29,2]],'#566168');polygon(g,[[3,-14],[16,-24],[29,-5],[17,9],[-7,4]],'#29343a');
+        for(let i=0;i<7;i++){const x=hash(i+17)*37-19,y=hash(i+8)*23-22;polygon(g,[[x,y],[x+4,y-5],[x+7,y+1],[x+2,y+3]],rgba(s.color,.8))}
+      }
+      g.restore();
+    }
+    function draw(c,s,t,mini=false,scene=state.scene) {
+      const [g,w,h]=size(c);if(!w||!h)return;
+      const day=scene==='day', night=day?0:1, family=s.family, geo=['mineral','obsidian'].includes(family), cy=h-(mini?24:76), cx=w*.5;
+      const scale=mini?Math.min(32,(h-30)/(s.height*state.height+.2)):Math.min(115,(h-115)/(s.height*state.height+.5),(w-50)/(2.5*s.radius*state.radius));
+      const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,day?'#607a7c':'#102026');sky.addColorStop(.68,day?'#8c9a85':'#1c3537');sky.addColorStop(1,day?'#4c6048':'#14292a');g.fillStyle=sky;g.fillRect(0,0,w,h);
+      g.fillStyle=day?'#607563':'#1a3030';
+      for(let i=0;i<9;i++){const x=hash(i+7)*w,peak=15+hash(i+31)*h*.3;polygon(g,[[x-25,h*.7],[x,peak],[x+27,h*.7]],day?'#687e6d':'#1a3030')}
+      polygon(g,[[0,cy+5],[w*.3,cy-12],[w*.6,cy+4],[w,cy-5],[w,h],[0,h]],day?'#52614a':'#1d302b');
+      for(let i=0;i<35;i++){const x=hash(i+4)*w,y=cy+hash(i+90)*(h-cy);g.strokeStyle=day?'#788566':'#3b5140';g.beginPath();g.moveTo(x,y);g.lineTo(x-3,y-4-hash(i)*6);g.stroke()}
+      const worldRadius=s.radius*state.radius,worldHeight=s.height*state.height,r=worldRadius*scale;
+      const project=p=>({x:cx+p.x*scale,y:cy-(p.y+(geo?.8:0))*scale+p.z*scale*.23});
+      const breath=s.enabled?(.90+.10*Math.sin(t*.7+11))*(day?.18:1):0;
+      const objectScale=(mini?.46:.9)*scale/(mini?32:105)*(geo?3.6:1);
+      const anchorFor=i=>{
+        if(geo){const a=hash(i+25)*Math.PI*2,r=Math.sqrt(hash(i+67));return {x:Math.cos(a)*1.6*r,y:-r*.8,z:Math.sin(a)*.7*r}}
+        if(state.group)return {x:[-.65,.65,0][i%3],y:0,z:[.08,.08,-.16][i%3]};
+        return {x:0,y:0,z:0};
+      };
+      g.filter=`brightness(${1+(s.enabled?state.areaGlow*s.surfaceGlow:0)*(day?.18:.65)})`;
+      if(geo){
+        const top=project({x:0,y:0,z:0});
+        for(let i=0;i<16;i++){const a=i*Math.PI/8,b=(i+1)*Math.PI/8,p=project({x:Math.cos(a)*1.6,y:-.8,z:Math.sin(a)*.7}),q=project({x:Math.cos(b)*1.6,y:-.8,z:Math.sin(b)*.7});polygon(g,[[top.x,top.y],[p.x,p.y],[q.x,q.y]],i%3===0?(day?'#66716a':'#3e4b46'):i%3===1?(day?'#4d5952':'#293934'):(day?'#798177':'#4c5850'))}
+      }
+      else if(state.group){item(g,s,cx-scale*.65,cy+scale*.08,objectScale);item(g,s,cx+scale*.65,cy+scale*.08,objectScale);item(g,s,cx,cy-scale*.16,objectScale)}
+      else item(g,s,cx,cy,objectScale);
+      g.filter='none';
+      if(!s.enabled){if(!mini&&c===main){const [mg,mw,mh]=size($('[data-mote]'));mg.clearRect(0,0,mw,mh)}return;}
+      g.save();g.globalCompositeOperation='lighter';
+      for(let i=0;i<Math.min(192,Math.round(80*state.density*state.dust));i++) {
+        const key=i+1011,p=fract(t*state.speed*.65/6.5+hash(key)),v=behaviorPath(family,i%4===0,anchorFor(i+19),p,t,key,worldRadius*1.1,worldHeight*.95,state.twist*.7,night);
+        v.x+=Math.sin(t*.45+key)*.025;v.y+=Math.sin(t*.6+key)*.025;v.z+=Math.cos(t*.4+key)*.025;
+        const pt=project(v),a=(day?.3:.5)*Math.sin(p*Math.PI)*(.6+.4*hash(key+31)),sz=(.013+.009*hash(key+93))*scale;
+        g.fillStyle=rgba(s.accent,a);g.beginPath();g.arc(pt.x,pt.y,Math.max(.3,sz*.38),0,Math.PI*2);g.fill();
+      }
+      g.restore();
+      const count=Math.round(64*state.density), points=[];
+      for(let i=0;i<count;i++) {
+        const key=i+11,phase=fract(t*state.speed/6.5+hash(key)),column=i%3===0,anchor=anchorFor(i),p=behaviorPath(family,column,anchor,phase,t,key,worldRadius,worldHeight,state.twist,night),screen=project(p);
+        points.push({x:screen.x,y:screen.y,z:p.z,phase,key,index:i,column,anchor});
+      }
+      points.sort((a,b)=>a.z-b.z);
+      for(const p of points) {
+        const opacity=(p.column?clamp(p.phase/.12)*clamp((1-p.phase)/.2):behaviorAlpha(family,p.phase,t,p.key))*(.82+.18*Math.sin(t*1.8+p.key*2.7));
+        const px=(s.shape==='shard'?.085:.066)*scale*(.7+.6*hash(p.key+31))*(mini?1.5:1.10)*(day?1.3:1)*(family==='spore'?.38:1);
+        if(p.index%2===0&&state.trailLength>0) {
+          g.save();g.globalCompositeOperation='lighter';let prev={x:p.x,y:p.y};
+          for(let j=1;j<=5;j++){const f=j/5,pt=project(behaviorTail(family,p.column,p.anchor,p.phase,t,p.key,worldRadius,worldHeight,state.speed,state.twist,(family==='spore'?Math.min(state.trailLength,.35):state.trailLength),f,night));g.strokeStyle=rgba(s.accent,opacity*.65*(day?.5:1)*(1-f/1.2)**2);g.lineWidth=Math.max(.2,px*.22*(1-f/1.1));g.beginPath();g.moveTo(prev.x,prev.y);g.lineTo(pt.x,pt.y);g.stroke();prev=pt}g.restore();
+        }
+        const sprite=texture(s,p.index%4);
+        g.save();g.globalAlpha=opacity;g.translate(p.x,p.y);g.rotate((p.key*71+t*(10+10*hash(p.key+77))*state.twist*(family==='obsidian'?1.8:1))*Math.PI/180);g.drawImage(sprite,-px/2,-px/2,px,px);g.restore();
+        if(family!=='spore'&&p.index%4===0){const flash=Math.max(0,Math.sin(t*1.2+p.key))**14;g.save();g.globalCompositeOperation='lighter';g.strokeStyle=rgba(s.accent,opacity*flash*(day?.4:.9));g.lineWidth=.7;g.beginPath();g.moveTo(p.x-px*.6,p.y-px*.2);g.lineTo(p.x+px*.6,p.y-px*.2);g.moveTo(p.x,p.y-px*.8);g.lineTo(p.x,p.y+px*.4);g.stroke();g.restore()}
+      }
+      if(!mini&&c===main){const [mg,mw,mh]=size($('[data-mote]'));mg.clearRect(0,0,mw,mh);for(let i=0;i<4;i++){mg.drawImage(texture(s,i),(i%2)*mw*.5+mw*.03,Math.floor(i/2)*mh*.5+mh*.03,mw*.44,mh*.44)}}
+    }
+    function refreshText() {
+      const s=tuning[state.selected];$('[data-name]').textContent=s.label;$('[data-other-name]').textContent=s.label;$('[data-variant]').textContent=state.scene==='night'?'Night':'Day';$('[data-other-variant]').textContent=state.scene==='night'?'Day':'Night';
+      $('[data-meta]').textContent=`${s.enabled?'Enabled':'Disabled'} · ${s.family} behavior · ${s.enabled?Math.round(64*state.density):0} motes · ${['mineral','obsidian'].includes(s.family)?'surface coverage':state.group?'3 pickups · 1 shared effect':'1 collectible'} · column ${(s.height*state.height).toFixed(2)} m · model glow + light spill in game · rise ${(6.5/state.speed).toFixed(1)} s`;
+      for(const k of controls)$(`[data-${k}-out]`).textContent=state[k].toFixed(2)+'×';
+      draw(main,s,state.t);draw(comparison,s,state.t,false,state.scene==='night'?'day':'night');
+      mini.forEach((c,i)=>{if(visible.has(c))draw(c,tuning[i],state.t,true)});
+    }
+    function select(index) {
+      state.selected=index;const s=tuning[index];$('[data-enabled]').checked=s.enabled;$('[data-effect]').value=String(index);$('[data-color]').value='#'+s.color;$('[data-accent]').value='#'+s.accent;$('[data-shape]').value=s.shape;refreshText();
+    }
+    catalog.forEach((s,i)=>{const o=document.createElement('option');o.value=i;o.textContent=s.label;$('[data-effect]').appendChild(o)});
+    $('[data-effect]').addEventListener('change',e=>select(Number(e.target.value)));
+    $('[data-enabled]').addEventListener('change',e=>{tuning[state.selected].enabled=e.target.checked;refreshText()});
+    for(const k of ['color','accent','shape'])$(`[data-${k}]`).addEventListener('input',e=>{tuning[state.selected][k]=e.target.value.replace('#','');refreshText()});
+    for(const k of controls)$(`[data-${k}]`).addEventListener('input',e=>{state[k]=Number(e.target.value);refreshText()});
+    $('[data-scene]').addEventListener('change',e=>{state.scene=e.target.value;refreshText()});
+    $('[data-group]').addEventListener('change',e=>{state.group=e.target.value==='group';refreshText()});
+    const play=$('[data-play]');
+    function playLabel(){play.textContent=state.playing?'Pause motion':'Play motion';play.setAttribute('aria-pressed',String(state.playing))}
+    play.addEventListener('click',()=>{state.playing=!state.playing;playLabel()});playLabel();
+    const visible=new Set(), mini=[];
+    const observer=new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting?visible.add(e.target):visible.delete(e.target)));
+    catalog.forEach((s,i)=>{
+      const cell=document.createElement('div');cell.className='wg-mini';const c=document.createElement('canvas');c.setAttribute('role','img');c.setAttribute('aria-label',s.label+' rising particle preview');const b=document.createElement('button');b.className='btn';b.type='button';b.textContent=s.label;b.addEventListener('click',()=>{select(i);main.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'center'})});cell.append(c,b);$('.wg-gallery').appendChild(cell);mini.push(c);observer.observe(c);
+    });
+    $('[data-count]').textContent=catalog.length;
+    $('[data-gallery]').addEventListener('toggle',()=>{if($('[data-gallery]').open)mini.forEach((c,i)=>draw(c,tuning[i],state.t,true))});
+    function config() {
+      let text='## WildGlow 0.4.5 preview tuning. Global sliders affect every effect.\n[Appearance]\n'+controls.map(k=>k[0].toUpperCase()+k.slice(1)+' = '+state[k]).join('\n')+'\n';
+      text+='\n[Lighting]\nSpillIntensity = 0.6\nSpillRange = 3\n\n[Performance]\nMaxSpillLights = 24\n';
+      tuning.forEach(s=>{text+=`\n[Style.${s.id}]\nEnabled = ${s.enabled}\nSurfaceGlow = ${s.surfaceGlow}\nLightSpill = 1\nColor = ${s.color}\nAccent = ${s.accent}\nShape = ${s.shape}\n`});return text;
+    }
+    $('[data-export]').addEventListener('click',()=>{const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(config());a.download='local.valheim.wildglow.cfg';a.click();$('[data-saved]').textContent='Config prepared · use in BepInEx/config while the game is closed.'});
+    if(window.openai&&typeof window.openai.sendFollowUpMessage==='function'){
+      $('[data-revise]').hidden=false;$('[data-revise]').addEventListener('click',async()=>{const s=tuning[state.selected];await window.openai.sendFollowUpMessage({prompt:`Revise WildGlow's ${s.label} effect (${s.id}) to color #${s.color}, accent #${s.accent}, shape ${s.shape}. Set this style Enabled = ${s.enabled}. Set global ${controls.map(k=>k+' '+state[k]).join(', ')}. Update the mod and previews to match.`,title:'Revise this WildGlow effect'})});
+    }
+    new ResizeObserver(()=>{refreshText();mini.forEach((c,i)=>{if(visible.has(c))draw(c,tuning[i],state.t,true)})}).observe(root);
+    select(0);
+    for(const [key,base64] of Object.entries(atlases)){const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=192;const g=c.getContext('2d');g.drawImage(img,0,0);maskPixels.set(key,g.getImageData(0,0,192,192).data);refreshText()};img.src='data:image/png;base64,'+base64}
+    let last=performance.now(),lastDraw=0;
+    function frame(now){if(!root.isConnected){observer.disconnect();return}const dt=Math.min((now-last)/1000,.1);last=now;if(state.playing&&!document.hidden){state.t+=dt;if(now-lastDraw>32){draw(main,tuning[state.selected],state.t);draw(comparison,tuning[state.selected],state.t,false,state.scene==='night'?'day':'night');if($('[data-gallery]').open)mini.forEach((c,i)=>{if(visible.has(c))draw(c,tuning[i],state.t,true)});lastDraw=now}}requestAnimationFrame(frame)}requestAnimationFrame(frame);
+  })();
+  </script>
+</div>
