@@ -1,23 +1,13 @@
 # WildGlow
 
-Adds colorful rising particles and soft lighting to Valheim’s plants, mushrooms, ore deposits, beehives and chests, with day and night variations. Common items, dropped loot, wildlife, trees and structures are excluded.
+<img src="assets/wildglow-gull-icon.png" alt="Viking gull among glowing woodland plants" width="320">
 
-## 0.4.5
+Colorful rising particles and soft light for Valheim’s plants, mushrooms, ore, beehives and chests, with day and night variations.
 
-Lighting changes.
+Install with r2modman or Thunderstore Mod Manager. Requires **BepInExPack_Valheim**.
 
-## Install
+Launch once, then edit `BepInEx/config/local.valheim.wildglow.cfg` to adjust effects and lighting.
 
-Use r2modman or Thunderstore Mod Manager. Requires BepInExPack_Valheim. For local import, select `Local-WildGlow-0.4.5.zip`.
+[GitHub](https://github.com/Vassteel/WildGlow) · [Discord](https://discord.gg/abN7R2tWyK) · [Effects](EFFECTS.md)
 
-## Settings
-
-Launch once, then edit `BepInEx/config/local.valheim.wildglow.cfg` to toggle individual effects and adjust particles and lighting.
-
-## AI disclosure
-
-Developed using generative AI, including code, icon artwork and documentation.
-
-## Feedback
-
-[Vassteels workshop on Discord](https://discord.gg/abN7R2tWyK)
+Code, artwork and documentation developed with generative AI.
