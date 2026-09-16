@@ -1,0 +1,102 @@
+name: Announce published release in Discord
+
+on:
+  release:
+    types: [published]
+
+# No checkout, repository writes, third-party actions or background server.
+permissions: {}
+concurrency:
+  group: discord-release-${{ github.event.release.id }}
+  cancel-in-progress: false
+
+jobs:
+  announce:
+    if: github.repository_owner == 'Vassteel' && !github.event.release.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Announce release to updates
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          import re
+          import sys
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          NAMES = {"Vassteel/WildGlow": "WildGlow", "Vassteel/Quartermaster": "Quartermaster",
+                   "Vassteel/ValheimHelmsman": "Helmsman"}
+
+          def clip(text, limit):
+              # Count UTF-16 units conservatively, including emoji.
+              raw = text.encode("utf-16-le")
+              if len(raw) <= limit * 2:
+                  return text
+              return raw[:(limit - 1) * 2].decode("utf-16-le", errors="ignore") + "…"
+
+          def payload(event):
+              release = event.get("release", {})
+              repo = event.get("repository", {}).get("full_name", "")
+              if event.get("action") != "published" or release.get("draft") or repo not in NAMES:
+                  return None
+              url = release.get("html_url", "")
+              if not url.startswith(f"https://github.com/{repo}/releases/tag/"):
+                  raise ValueError("Unexpected release URL")
+              tag = str(release.get("tag_name") or "New version")
+              notes = str(release.get("body") or "Open the release for details and downloads.").strip()
+              embed = {
+                  "title": clip(f"{NAMES[repo]} {tag}", 240),
+                  "url": url,
+                  "description": clip(notes, 3000),
+                  "color": 0xD6A54A,
+                  "fields": [{"name": "Download & full release notes", "value": url}],
+                  "footer": {"text": "Pre-release · Vassteel's Workshop" if release.get("prerelease") else "Vassteel's Workshop"},
+              }
+              if release.get("published_at"):
+                  embed["timestamp"] = release["published_at"]
+              return {"username": "Workshop Gull", "content": "🪶 SKRAAA! Fresh cargo from the workshop.",
+                      "allowed_mentions": {"parse": []}, "embeds": [embed]}
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          def main():
+              with Path(os.environ["GITHUB_EVENT_PATH"]).open(encoding="utf-8") as source:
+                  message = payload(json.load(source))
+              if message is None:
+                  print("No published mod release to announce.")
+                  return 0
+              webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+              if not webhook:
+                  print("::error::Add the DISCORD_WEBHOOK_URL repository Actions secret for #updates.")
+                  return 1
+              if not re.fullmatch(r"https://discord\.com/api(?:/v[0-9]+)?/webhooks/[0-9]+/[A-Za-z0-9_.-]+", webhook):
+                  print("::error::Expected a standard Discord webhook URL (without /github or query parameters).")
+                  return 1
+              request = urllib.request.Request(webhook + "?wait=true", json.dumps(message).encode("utf-8"),
+                  {"Content-Type": "application/json", "User-Agent": "VassteelWorkshopRelease/1.0"}, method="POST")
+              try:
+                  with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
+                      receipt = json.load(response)
+                  if not isinstance(receipt, dict) or not receipt.get("id"):
+                      raise ValueError("No message receipt")
+              except urllib.error.HTTPError as error:
+                  # Never print the exception URL or response body: the URL contains the secret.
+                  print(f"::error::Discord returned HTTP {error.code}. Check the webhook and delivery before retrying.")
+                  return 1
+              except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+                  print("::error::Discord delivery was not confirmed. Check #updates before retrying to avoid duplicates.")
+                  return 1
+              print("Discord confirmed the release announcement.")
+              return 0
+
+          if __name__ == "__main__":
+              sys.exit(main())
+          PYTHON
