@@ -63,4 +63,33 @@ Check(fruitLights.Count==2 && fruitLights[0].transform.position.y==4 && fruitLig
 Check(Math.Abs(fruitLights[0].intensity+fruitLights[1].intensity-.6f)<.00001f,"Fruit lights multiply the intensity budget");
 Check(fruitLights.TrueForAll(l=>l.renderMode==LightRenderMode.ForcePixel && l.shadows==LightShadows.None),"Fruit spill lost its pixel lighting or added shadow cost");
 spill.Hide();Check(fruitLights.TrueForAll(l=>!l.enabled),"Hidden fruit retains illumination");spill.Dispose();
+// A new group must borrow the base material after all old groups detach.
+var leftRoot=new GameObject();var rightRoot=new GameObject();
+var leftRenderer=new MeshRenderer{sharedMaterials=new[]{original}};
+var rightRenderer=new MeshRenderer{sharedMaterials=new[]{original}};
+leftRoot.renderers.Add(leftRenderer);rightRoot.renderers.Add(rightRenderer);
+var leftGroup=new TargetGroup();leftGroup.Members.Add(new Target{Root=leftRoot});
+var rightGroup=new TargetGroup();rightGroup.Members.Add(new Target{Root=rightRoot});
+var leftFx=new ModelEmission();var rightFx=new ModelEmission();
+leftFx.Refresh(leftGroup);rightFx.Refresh(rightGroup);leftFx.Tick(1,1);rightFx.Tick(1,1);
+var oldRight=rightRenderer.sharedMaterials[0];
+// Mining builds a renderer using a temporary material just before regrouping.
+var lateRenderer=new MeshRenderer{sharedMaterials=new[]{oldRight}};rightRoot.renderers.Add(lateRenderer);
+leftFx.Restore();rightFx.Restore();
+Check(lateRenderer.sharedMaterials[0]==original,"Detaching missed a newly rebuilt renderer");
+leftGroup.Members.Add(rightGroup.Members[0]);leftFx.Refresh(leftGroup);rightFx.Dispose();leftFx.Tick(1,1);
+Check(Math.Abs(rightRenderer.sharedMaterials[0].GetColor("_EmissionColor").r-.7f*.65f*.085f)<.00001f,"Regrouping compounded two effects' emission");
+leftFx.Dispose();
+Check(rightRenderer.sharedMaterials[0]==original && lateRenderer.sharedMaterials[0]==original && !original.destroyed,"Group handoff left a destroyed temporary material on a renderer");
+// A stable group repeatedly adopts different materials as its members change.
+var changing=new ModelEmission();
+for(int i=0;i<100;i++)
+{
+    var sourceMaterial=new Material(original);leftRenderer.sharedMaterials=new[]{sourceMaterial};
+    changing.Refresh(leftGroup);changing.Tick(1,1);
+    Check(changing.MaterialCount<=2,"Inactive materials accumulated across group refreshes");
+}
+var propagated=new MeshRenderer{sharedMaterials=new[]{leftRenderer.sharedMaterials[0]}};leftRoot.renderers.Add(propagated);
+changing.Dispose();
+Check(!propagated.sharedMaterials[0].destroyed,"Dispose before refresh left a rebuilt renderer pointing at a destroyed material");
 Console.WriteLine($"PASS: {checks} emission lifecycle/ownership checks using material/renderer test doubles (no GPU validation).");

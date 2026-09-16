@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace WildGlow
 {
-    [BepInPlugin(Guid, "WildGlow", "0.4.10")]
+    [BepInPlugin(Guid, "WildGlow", "0.4.11")]
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "local.valheim.wildglow";
@@ -108,7 +108,7 @@ namespace WildGlow
             });
             new Terminal.ConsoleCommand("wildglow_status", "Show the loaded version and nearby model emission diagnostics.", args =>
             {
-                string status = "WildGlow 0.4.10; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
+                string status = "WildGlow 0.4.11; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
                 args.Context.AddString(status); Logger.LogInfo(status);
                 foreach (var g in groups.Values.OrderBy(g => g.Distance).Take(5))
                 {
@@ -118,7 +118,7 @@ namespace WildGlow
                     args.Context.AddString(info); Logger.LogInfo(info);
                 }
             });
-            Logger.LogInfo("WildGlow 0.4.10 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
+            Logger.LogInfo("WildGlow 0.4.11 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
         }
 
         private static void Register(Component __instance)
@@ -150,7 +150,7 @@ namespace WildGlow
             Player player = Player.m_localPlayer;
             if (configDirty)
             {
-                configDirty = false; ApplyConfig(); ClearEffects(); ClearDemonstration();
+                configDirty = false; ApplyConfig(); ClearEffects(); ClearDemonstration(); MoteEffect.ReleaseMaterials();
                 foreach (var pair in targets) if (pair.Value.Root) pending[pair.Key] = pair.Value.Root;
                 targets.Clear();
                 lastPlayer = null; materialsFailed = false;
@@ -203,6 +203,9 @@ namespace WildGlow
 
         private void Refresh(Vector3 player)
         {
+            // Every old group must release its materials before any new group borrows
+            // a renderer. Otherwise a merge/split can clone another effect's glow.
+            foreach (var effect in active.Values) effect.DetachSources();
             foreach (var p in pending)
             {
                 if (!p.Value || targets.ContainsKey(p.Key)) continue;
@@ -259,6 +262,13 @@ namespace WildGlow
                     materialsFailed = true; ClearEffects(); break;
                 }
             }
+            if (!materialsFailed)
+                try { foreach (var pair in active) pair.Value.BindSources(groups[pair.Key]); }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Surface renderer unavailable; disabling effects safely: " + ex);
+                    materialsFailed = true; ClearEffects();
+                }
         }
 
         private void ClearEffects() { foreach (var fx in active.Values) fx.Dispose(); active.Clear(); activeStyles.Clear(); groups.Clear(); }

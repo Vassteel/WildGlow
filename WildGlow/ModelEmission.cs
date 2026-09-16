@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace WildGlow
@@ -10,7 +11,7 @@ namespace WildGlow
     {
         private sealed class Glow
         {
-            internal Material Original, Material;
+            internal Material Material;
             internal string ColorProperty;
             internal Color Baseline, Tint;
             internal float Scale;
@@ -18,20 +19,23 @@ namespace WildGlow
         private sealed class Binding
         {
             internal Renderer Renderer;
-            internal Material[] Original, Emissive;
+            internal Material[] Emissive;
         }
         private readonly Dictionary<Tuple<Material, float>, Glow> materials = new Dictionary<Tuple<Material, float>, Glow>();
         private readonly Dictionary<Material, Material> originals = new Dictionary<Material, Material>();
         private readonly List<Binding> bindings = new List<Binding>();
+        private readonly List<GameObject> roots = new List<GameObject>();
         private bool applied;
         internal int MaterialCount => materials.Count;
 
         internal void Refresh(TargetGroup group)
         {
-            Restore(); bindings.Clear();
+            Restore(); bindings.Clear(); roots.Clear();
+            var used = new HashSet<Tuple<Material, float>>();
             foreach (var target in group.Members)
             {
                 if (!target.VisualRoot || target.Style.SurfaceGlow <= 0) continue;
+                roots.Add(target.VisualRoot);
                 foreach (var renderer in target.VisualRoot.GetComponentsInChildren<Renderer>(true))
                 {
                     if (!(renderer is MeshRenderer) && !(renderer is SkinnedMeshRenderer)) continue;
@@ -44,6 +48,7 @@ namespace WildGlow
                         string color = original.HasProperty("_EmissionColor") ? "_EmissionColor" : original.HasProperty("_EmissiveColor") ? "_EmissiveColor" : null;
                         if (color == null) { replacement[i] = original; continue; }
                         var key = Tuple.Create(original, target.Style.SurfaceGlow);
+                        used.Add(key);
                         if (!materials.TryGetValue(key, out var glow))
                         {
                             var material = new Material(original) { name = original.name + " [WildGlow emission]", hideFlags = HideFlags.DontSave };
@@ -56,13 +61,19 @@ namespace WildGlow
                                 material.SetTextureOffset(texture, original.GetTextureOffset("_MainTex"));
                             }
                             material.EnableKeyword("_EMISSION");
-                            glow = new Glow { Original = original, Material = material, ColorProperty = color, Scale = target.Style.SurfaceGlow, Baseline = original.GetColor(color), Tint = original.HasProperty("_Color") ? original.GetColor("_Color") : Color.white };
+                            glow = new Glow { Material = material, ColorProperty = color, Scale = target.Style.SurfaceGlow, Baseline = original.GetColor(color), Tint = original.HasProperty("_Color") ? original.GetColor("_Color") : Color.white };
                             materials.Add(key, glow); originals.Add(material, original);
                         }
                         replacement[i] = glow.Material; supported = true;
                     }
-                    if (supported) bindings.Add(new Binding { Renderer = renderer, Original = source, Emissive = replacement });
+                    if (supported) bindings.Add(new Binding { Renderer = renderer, Emissive = replacement });
                 }
+            }
+            foreach (var key in materials.Keys.Where(key => !used.Contains(key)).ToArray())
+            {
+                var material = materials[key].Material;
+                originals.Remove(material); materials.Remove(key);
+                if (material) UnityEngine.Object.Destroy(material);
             }
         }
         internal void Tick(float amount, float night)
@@ -83,13 +94,17 @@ namespace WildGlow
         internal void Restore()
         {
             if (!applied) return;
-            foreach (var binding in bindings)
+            // Mining can copy our material into a new renderer before the next refresh.
+            // Restore those copies too, before regrouping or destroying the material.
+            var renderers = bindings.Select(b => b.Renderer).Concat(roots.Where(root => root)
+                .SelectMany(root => root.GetComponentsInChildren<Renderer>(true))).Distinct();
+            foreach (var renderer in renderers)
             {
-                if (!binding.Renderer) continue;
-                var current = binding.Renderer.sharedMaterials; bool changed = false;
+                if (!renderer) continue;
+                var current = renderer.sharedMaterials; bool changed = false;
                 for (int i = 0; i < current.Length; i++)
                     if (current[i] && originals.TryGetValue(current[i], out var original)) { current[i] = original; changed = true; }
-                if (changed) binding.Renderer.sharedMaterials = current;
+                if (changed) renderer.sharedMaterials = current;
             }
             applied = false;
         }
@@ -97,7 +112,7 @@ namespace WildGlow
         {
             Restore();
             foreach (var glow in materials.Values) if (glow.Material) UnityEngine.Object.Destroy(glow.Material);
-            bindings.Clear(); materials.Clear(); originals.Clear();
+            bindings.Clear(); roots.Clear(); materials.Clear(); originals.Clear();
         }
     }
 }

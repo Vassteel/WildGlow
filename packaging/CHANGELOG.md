@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.11
+
+- Restore all old groups before assigning model glow after a merge/split, preventing nested temporary materials and destroyed-material references.
+- Restore newly rebuilt mining renderers during cleanup and release unused emission materials.
+- Release cached particle materials and textures when applying appearance changes.
+
 ## 0.4.10
 
 - Updated README testing-status wording.

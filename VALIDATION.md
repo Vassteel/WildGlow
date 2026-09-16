@@ -1,4 +1,12 @@
-# WildGlow 0.4.8 validation
+# WildGlow 0.4.11 review validation
+
+Release compilation has zero warnings/errors. The full existing suite passes: 1,368,937 motion/art, 34,937 behavior, 9,598 grouping, 30,009 surface, 31 fruit and 135 material-lifecycle checks. The binary verifier resolves 323 game references/hooks and validates 58 styles and 165 aliases.
+
+New regressions cover group merge/split ownership, rebuilt mining renderers, restoring materials before reassignment, preserving replacements owned by another mod, and bounded temporary-material lifetime. These tests exercise production material logic with host doubles; GPU brightness, bloom and actual light spill still need in-game checks.
+
+## Historical checks
+
+### WildGlow 0.4.8 validation
 
 Version 0.4.8 updates the README voice and release metadata.
 
@@ -23,7 +31,7 @@ The fix is prepared locally and has not been installed or observed in-game. Afte
 
 The following records the previous 0.4.5 validation and remaining general lighting playtest; it is retained as historical context.
 
-# WildGlow 0.4.5 validation
+### WildGlow 0.4.5 validation
 
 This build addresses overbright ore/bush self-emission with no surrounding illumination, dim mushrooms and unwanted greydwarf-nest effects. It applies the lighting path to all eligible styles. Mote motion and artwork are unchanged. See INSTALLATION.md for the last completed installation.
 

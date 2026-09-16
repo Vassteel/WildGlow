@@ -81,6 +81,7 @@ namespace WildGlow
             if (!ReferenceEquals(sources, group)) emission.Refresh(group);
             sources = group;
         }
+        internal void DetachSources() { emission.Restore(); sources = null; }
         internal int EmissiveMaterials => emission.MaterialCount;
         internal int SpillLights => spill.ActiveCount;
         private SurfaceAnchor SourceAnchor(int index, bool upward)
