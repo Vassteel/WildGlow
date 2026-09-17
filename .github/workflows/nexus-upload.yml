@@ -1,0 +1,78 @@
+name: Upload release to Nexus Mods
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing published GitHub release tag (e.g. v1.2.3)
+        required: true
+        type: string
+      asset:
+        description: Exact ZIP asset name from that release
+        required: true
+        type: string
+      publish:
+        description: Publish to Nexus (unchecked validates only)
+        type: boolean
+        default: false
+      archive_previous:
+        description: Archive the previous Nexus file version
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexus-publish-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    if: github.repository_owner == 'Vassteel' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out publishing tools
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Test publishing checks
+        run: python3 -m unittest discover -s .github/tests -p 'test_nexus_release.py'
+      - name: Prepare and validate release
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_ASSET: ${{ inputs.asset }}
+          PUBLISH: ${{ inputs.publish }}
+          NEXUSMODS_API_KEY: ${{ secrets.NEXUSMODS_API_KEY }}
+          NEXUSMODS_FILE_ID: ${{ vars.NEXUSMODS_FILE_ID }}
+          NEXUSMODS_PAGE_ID: ${{ vars.NEXUSMODS_PAGE_ID }}
+        shell: bash
+        run: |
+          args=()
+          if [[ "$PUBLISH" == "true" ]]; then args+=(--publish); fi
+          python3 .github/scripts/nexus_release.py release --tag "$RELEASE_TAG" --asset "$RELEASE_ASSET" "${args[@]}"
+      - name: Upload verified release
+        if: inputs.publish
+        id: nexus
+        uses: Nexus-Mods/upload-action@98532f7670c27cbecc78fae03fa3e278147827e2
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ steps.prepare.outputs.file_id }}
+          mod_id: ${{ steps.prepare.outputs.mod_id }}
+          filename: ${{ steps.prepare.outputs.filename }}
+          version: ${{ steps.prepare.outputs.version }}
+          display_name: ${{ steps.prepare.outputs.display_name }}
+          category: main
+          archive_existing_version: ${{ inputs.archive_previous }}
+          primary_mod_manager_download: true
+          allow_mod_manager_download: true
+          show_requirements_pop_up: true
+          update_mod_version: true
+      - name: Record upload receipt
+        if: inputs.publish && success()
+        env:
+          VERSION_ID: ${{ steps.nexus.outputs.version_id }}
+        run: printf 'Nexus confirmed file version ID %s\n' "$VERSION_ID" >> "$GITHUB_STEP_SUMMARY"
