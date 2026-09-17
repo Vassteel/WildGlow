@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace WildGlow
 {
-    [BepInPlugin(Guid, "WildGlow", "0.4.11")]
+    [BepInPlugin(Guid, "WildGlow", "0.4.12")]
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "local.valheim.wildglow";
@@ -108,7 +108,7 @@ namespace WildGlow
             });
             new Terminal.ConsoleCommand("wildglow_status", "Show the loaded version and nearby model emission diagnostics.", args =>
             {
-                string status = "WildGlow 0.4.11; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
+                string status = "WildGlow 0.4.12; enabled=" + enabledMod.Value + "; renderer failed=" + materialsFailed + "; active effects=" + active.Count;
                 args.Context.AddString(status); Logger.LogInfo(status);
                 foreach (var g in groups.Values.OrderBy(g => g.Distance).Take(5))
                 {
@@ -118,7 +118,7 @@ namespace WildGlow
                     args.Context.AddString(info); Logger.LogInfo(info);
                 }
             });
-            Logger.LogInfo("WildGlow 0.4.11 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
+            Logger.LogInfo("WildGlow 0.4.12 loaded. " + Styles.ById.Count + " styles. Client-only visuals; no save or network data changes.");
         }
 
         private static void Register(Component __instance)

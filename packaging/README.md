@@ -1,15 +1,32 @@
-# WildGlow
+# ✨ WildGlow — Collectibles & Woodland Light
 
 <img src="https://raw.githubusercontent.com/Vassteel/WildGlow/master/assets/wildglow-gull-icon.png" alt="Viking gull among glowing woodland plants" width="320">
 
-**SKRAAA! Walked past supper again? Buy yourself better eyes.**
+SKRAAA! Walked past supper again? Buy yourself better eyes.
 
-I've put a little glow on the useful things: plants, mushrooms, ore, beehives and stocked chests. Colourful motes, soft light, different looks by day and night. Even the apples get dressed for dinner.
+## 🌿 Collectible Effects
 
-Adjust particles, surface glow and light spill separately, or switch individual effects off. The mushrooms won't take it personally.
+- **Useful finds:** Highlight supported plants, mushrooms, berries, ore and other collectibles.
+- **Distinct styles:** Different colours, motes and effects help useful objects stand out.
+- **Surface glow:** Effects follow supported models.
+- **Light spill:** Soft illumination reaches nearby surfaces.
+- **Day & night:** Effects change with the game’s lighting cycle.
 
-**Install:** r2modman or Thunderstore Mod Manager; requires **BepInExPack_Valheim**. Launch once, then edit `BepInEx/config/local.valheim.wildglow.cfg`. Apply changes with `wildglow_reload`.
+## 🎛️ Customisation
 
-[GitHub](https://github.com/Vassteel/WildGlow) · [Discord](https://discord.gg/abN7R2tWyK) · [Effects](https://github.com/Vassteel/WildGlow/blob/master/EFFECTS.md)
+- Adjust particles, surface glow and light spill independently.
+- Tune individual effects or switch them off.
+- Reload your settings without restarting the game.
+
+## 🚀 Quick Start
+
+1. Install **BepInEx and WildGlow**.
+2. Launch the game once to generate the configuration.
+3. Edit `BepInEx/config/local.valheim.wildglow.cfg`.
+4. Run `wildglow_reload` in the game console to apply changes.
+
+See the effect catalog for supported objects and individual settings.
+
+[Effects](https://github.com/Vassteel/WildGlow/blob/master/EFFECTS.md) · [GitHub](https://github.com/Vassteel/WildGlow) · [Discord](https://discord.gg/abN7R2tWyK)
 
 Code, artwork and documentation developed with generative AI.

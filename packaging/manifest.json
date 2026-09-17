@@ -1,7 +1,7 @@
 {
   "name": "WildGlow",
   "author": "Local",
-  "version_number": "0.4.11",
+  "version_number": "0.4.12",
   "website_url": "https://github.com/Vassteel/WildGlow",
   "description": "Model-attached collectible motes and soft light spill with day/night variants. Sparse columns, brighter mushrooms and subdued ore/bush glow. Per-effect controls. Common items, trees, structures, dropped items and greydwarf nests excluded.",
   "dependencies": [

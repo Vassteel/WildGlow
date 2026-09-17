@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.12
+
+- Refresh the README with current features, setup and controls.
+
 ## 0.4.11
 
 - Restore all old groups before assigning model glow after a merge/split, preventing nested temporary materials and destroyed-material references.
